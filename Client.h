@@ -2,12 +2,13 @@
 #ifndef Client_h
 #define Client_h
 
-struct Client{
-    char *root_path;
+struct Client
+{
     int socket;
+    char *root_path;
 };
 
-void *client_handler(void *data);
+void *client_handler(void *client_data);
 
 
 #endif

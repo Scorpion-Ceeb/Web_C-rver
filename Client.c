@@ -1,9 +1,7 @@
 
-
-
 #include "Client.h"
 #include "Extra_Methods.h"
-#include "Build_Html.h"
+#include "html_builder.h"
 #include "Server.h"
 
 #include <stdio.h>
@@ -23,9 +21,9 @@
 
 
 
-void *client_handler(void *data)
+void *client_handler(void *client_data)
 {
-    struct Client client = *(struct Client *) data;
+    struct Client client = *(struct Client *) client_data;
     int client_socket = client.socket;
     char *client_root_path = client.root_path;
     int not_found = 0;
@@ -66,9 +64,5 @@ void *client_handler(void *data)
     
     return NULL;
 }
-
-
-
-
 
 

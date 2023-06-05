@@ -10,16 +10,17 @@
 
 #define MAX_SIZE_BUFFER 10240
 #define HTTP_HEADER "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n"
-#define HTML_TABLE_HEAR "<!-- TABLE_HEAR -->"
+#define HTML_TABLE_ELEMENTS "<!-- TABLE_ELEMENTS -->"
 #define LINK_STYLE "onmouseover=\"this.style.color='blue'\" onmouseout=\"this.style.color='black'\" style=\"color: black; text-decoration: none;\""
 
-void build_name_table(char *html_response, char *path, char *root_path, char *file, struct stat st) {
+void build_name_table(char *html_response, char *path, char *root_path, char *file, struct stat st) 
+{
     strcat(html_response, "<td>");
     strcat(html_response, "<a ");
     strcat(html_response, LINK_STYLE);
     strcat(html_response, "href=\"");
 
-    char *aux = path_to_server(path, root_path);
+    char *aux = from_path_to_browser(path, root_path);
     char *redirect = (char *) malloc(strlen(aux) + strlen(file) + 2);
     strcpy(redirect, aux);
     strcat(redirect, "/");
@@ -32,71 +33,80 @@ void build_name_table(char *html_response, char *path, char *root_path, char *fi
     free(aux);
     free(url);
 
-    if (S_ISDIR(st.st_mode)) 
-        strcat(html_response, "\"><span><div class=\"folder\"></div> ");
-    else 
-        strcat(html_response, "\"><span><div class=\"file\"></div> ");
-
-
+    if (S_ISDIR(st.st_mode)) {
+        strcat(html_response, "\"><span><div></div> ");
+    } else {
+        strcat(html_response, "\"><span><div></div> ");
+    }
     strcat(html_response, file);
 
     strcat(html_response, "</span></a>");
     strcat(html_response, "</td>");
 }
 
-void build_size_table(char *html_response, struct stat st) {
-    strcat(html_response, "<td class=\"center\">");
+void build_size_table(char *html_response, struct stat st) 
+{
+    strcat(html_response, "<td>");
 
     char aux[64];
-    if (!S_ISDIR(st.st_mode)) {
+    if (!S_ISDIR(st.st_mode)) 
+    {
         unsigned long t = st.st_size / 1024;
         char *type;
 
-        if (t > 1024) {
+        if (t > 1024) 
+        {
             t /= 1024;
             type = " mb";
 
-            if (t > 1024) {
+            if (t > 1024) 
+            {
                 t /= 1024;
                 type = " gb";
             }
-        } else {
+        } 
+        else 
+        {
             type = " kb";
         }
 
         sprintf(aux, "%ld", t);
         strcat(html_response, aux);
         strcat(html_response, type);
-    } else {
-        strcat(html_response, "-");
+    } 
+    else 
+    {
+        strcat(html_response,"-");
     }
 
     strcat(html_response, "</td>");
 }
 
-void build_date_table(char *html_response, struct stat st) {
-    strcat(html_response, "<td class=\"center\">");
+void build_date_table(char *html_response, struct stat st) 
+{
+    strcat(html_response, "<td>");
 
-    struct tm *tm;
+    struct tm *time;
 
-    tm = localtime(&st.st_mtime);
+    time = localtime(&st.st_mtime);
 
     char aux[64];
-    sprintf(aux, "%d-%02d-%02d %02d:%02d:%02d", tm->tm_year + 1900, tm->tm_mon + 1, tm->tm_mday,
-            tm->tm_hour, tm->tm_min, tm->tm_sec);
+    sprintf(aux, "%d-%02d-%02d %02d:%02d:%02d", time->tm_year + 1900, time->tm_mon + 1, time->tm_mday,
+            time->tm_hour, time->tm_min, time->tm_sec);
 
     strcat(html_response, aux);
     strcat(html_response, "</td>");
 }
 
-char **load_html() {
-    FILE *fp = fopen("./index.html", "r");
+char **load_html() 
+{
+    FILE *f_html = fopen("./index.html", "r");
 
     char buffer[MAX_SIZE_BUFFER];
 
-    fread(buffer, MAX_SIZE_BUFFER, 1, fp);
+    fread(buffer, MAX_SIZE_BUFFER, 1, f_html);
 
-    char *p = strstr(buffer, HTML_TABLE_HEAR);
+    char *p = strstr(buffer, HTML_TABLE_ELEMENTS);
 
     char **html = (char **) malloc(2 * sizeof(char *));
 
@@ -107,16 +117,17 @@ char **load_html() {
     html[0] = (char *) malloc(strlen(buffer) + 1);
     strcpy(html[0], buffer);
 
-    fclose(fp);
+    fclose(f_html);
 
     return html;
 }
 
-void build_back(char *html_response, char *path, char *root_path) {
+void build_back(char *html_response, char *path, char *root_path) 
+{
     strcat(html_response, "<td>");
     strcat(html_response, "<a href=\"");
 
-    char *redirect = path_to_server(path, root_path);
+    char *redirect = from_path_to_browser(path, root_path);
     clean_last_path(redirect);
 
     char *url = to_url(redirect);
@@ -125,11 +136,12 @@ void build_back(char *html_response, char *path, char *root_path) {
     free(url);
 
     strcat(html_response, "\">");
-    strcat(html_response, "<div class=\"gg-arrow-left\"></div></a></td>");
-    strcat(html_response, "<td class=\"center\"></td><td class=\"center\"></td></tr>");
+    strcat(html_response, "<div></div></a></td>");
+    strcat(html_response, "<td></td><td></td></tr>");
 }
 
-char *build_html(DIR *d, char *path, char *root_path) {
+char *build_html(DIR *d, char *path, char *root_path) 
+{
     char **html = load_html();
     int ind = 2;
     char *html_response = (char *) malloc(MAX_SIZE_BUFFER * ind);
@@ -173,8 +185,9 @@ char *build_html(DIR *d, char *path, char *root_path) {
     return html_response;
 }
 
-char *render_html(DIR *d, char *path, char *root_path) {
-    char *html_response = build_html(d, path, root_path);
+char *render_html(DIR *directory, char *path, char *root_path) 
+{
+    char *html_response = build_html(directory, path, root_path);
 
     return html_response;
 }

@@ -21,8 +21,8 @@ struct Server
 
 int server_constructor(char *server_ip, int port, int backlog);
 
-int to_other_url(int socket_client, char *path, char *root_path);
+int to_other_url(int client_socket, char *path, char *root_path);
 
-int send_file_to_ulr(int socket_client, char *path);
+int send_file_to_ulr(int client_socket, char *path);
 
 #endif /* Server_h */
