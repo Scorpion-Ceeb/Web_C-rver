@@ -19,7 +19,7 @@ struct Server
     
 };
 
-int server_constructor(char *server_ip, int port, int backlog);
+int server_constructor(int domain, int service, int protocol, char *server_ip, int port, int backlog);
 
 int to_other_url(int client_socket, char *path, char *root_path);
 

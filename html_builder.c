@@ -7,22 +7,20 @@
 #include <time.h>
 
 #include "Extra_Methods.h"
+#include "Url_Methods.h"
 
 #define MAX_SIZE_BUFFER 10240
-#define HTTP_HEADER "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n"
 #define HTML_TABLE_ELEMENTS "<!-- TABLE_ELEMENTS -->"
-#define LINK_STYLE "onmouseover=\"this.style.color='blue'\" onmouseout=\"this.style.color='black'\" style=\"color: black; text-decoration: none;\""
 
 void build_name_table(char *html_response, char *path, char *root_path, char *file, struct stat st) 
 {
     strcat(html_response, "<td>");
     strcat(html_response, "<a ");
-    strcat(html_response, LINK_STYLE);
     strcat(html_response, "href=\"");
 
-    char *aux = from_path_to_browser(path, root_path);
-    char *redirect = (char *) malloc(strlen(aux) + strlen(file) + 2);
-    strcpy(redirect, aux);
+    char *temp = from_path_to_browser(path, root_path);
+    char *redirect = (char *) malloc(strlen(temp) + strlen(file) + 2);
+    strcpy(redirect, temp);
     strcat(redirect, "/");
     strcat(redirect, file);
 
@@ -30,7 +28,7 @@ void build_name_table(char *html_response, char *path, char *root_path, char *fi
 
     strcat(html_response, url);
     free(redirect);
-    free(aux);
+    free(temp);
     free(url);
 
     if (S_ISDIR(st.st_mode)) {
@@ -90,15 +88,15 @@ void build_date_table(char *html_response, struct stat st)
 
     time = localtime(&st.st_mtime);
 
-    char aux[64];
-    sprintf(aux, "%d-%02d-%02d %02d:%02d:%02d", time->tm_year + 1900, time->tm_mon + 1, time->tm_mday,
+    char temp[64];
+    sprintf(temp, "%d-%02d-%02d %02d:%02d:%02d", time->tm_year + 1900, time->tm_mon + 1, time->tm_mday,
             time->tm_hour, time->tm_min, time->tm_sec);
 
-    strcat(html_response, aux);
+    strcat(html_response, temp);
     strcat(html_response, "</td>");
 }
 
-char **load_html() 
+char **html_loader() 
 {
     FILE *f_html = fopen("./index.html", "r");
 
@@ -142,32 +140,32 @@ void build_back(char *html_response, char *path, char *root_path)
 
 char *build_html(DIR *d, char *path, char *root_path) 
 {
-    char **html = load_html();
+    char **html = html_loader();
     int ind = 2;
     char *html_response = (char *) malloc(MAX_SIZE_BUFFER * ind);
-    strcpy(html_response, HTTP_HEADER);
+    strcpy(html_response, "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n");
     strcat(html_response, html[0]);
 
     struct stat st;
-    struct dirent *dir;
+    struct dirent *directory;
 
     build_back(html_response, path, root_path);
 
-    while ((dir = readdir(d)) != NULL) {
-        if (strcmp(dir->d_name, ".") == 0) continue;
-        if (strcmp(dir->d_name, "..") == 0) continue;
+    while ((directory = readdir(d)) != NULL) {
+        if (strcmp(directory->d_name, ".") == 0) continue;
+        if (strcmp(directory->d_name, "..") == 0) continue;
 
-        char aux_path[strlen(path) + strlen(dir->d_name) + 1];
+        char aux_path[strlen(path) + strlen(directory->d_name) + 1];
 
         strcpy(aux_path, path);
         strcat(aux_path, "/");
-        strcat(aux_path, dir->d_name);
+        strcat(aux_path, directory->d_name);
 
         stat(aux_path, &st);
 
         strcat(html_response, "<tr>");
 
-        build_name_table(html_response, path, root_path, dir->d_name, st);
+        build_name_table(html_response, path, root_path, directory->d_name, st);
         build_size_table(html_response, st);
         build_date_table(html_response, st);
 

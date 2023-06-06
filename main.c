@@ -13,12 +13,12 @@
 #include "Client.h"
 
 #define MAX_SIZE_BUFFER 1024
-#define GREEN "\033[0;32m"
+#define BBlue "\033[1;34m"
 #define RESET "\033[0m"
 
 void launch(int port, char *root_path) {
 
-    int socket_server = server_constructor("localhost", port, 1);
+    int socket_server = server_constructor(AF_INET, SOCK_STREAM, 0, "localhost", port, 1);
 
     while (1) {
         struct sockaddr_in client_address;
@@ -35,8 +35,8 @@ void launch(int port, char *root_path) {
     }
 }
 
-int main(int argn, char *argv[]) {
-    signal(SIGPIPE, SIG_IGN);
+int main(int argn, char *arg_values[]) 
+{
 
     int port;
     char *root_path;
@@ -47,10 +47,10 @@ int main(int argn, char *argv[]) {
     struct passwd *pwd = getpwuid(uid);
 
 
-    if (argv[1] == NULL) port = 5000;
+    if (arg_values[1] == NULL) port = 5000;
     else {
         char *p;
-        int q = (int) strtol(argv[1], &p, 10);
+        int q = (int) strtol(arg_values[1], &p, 10);
 
         if (strlen(p) == 0) port = q;
         else {
@@ -60,29 +60,31 @@ int main(int argn, char *argv[]) {
         }
     }
 
-    if (argv[1] == NULL || argv[2] == NULL) {
+    if (arg_values[1] == NULL || arg_values[2] == NULL) {
         root_path = pwd->pw_dir;
     } else {
-        DIR *d;
-        d = opendir(argv[2]);
+        DIR *directory;
+        directory = opendir(arg_values[2]);
 
-        if (d) root_path = argv[2];
+        if (directory) root_path = arg_values[2];
         else {
             fprintf(stderr, "%s: the path does not exist\n", "ERROR");
 
             return 0;
         }
-        closedir(d);
+        closedir(directory);
     }
 
-    char print_path[MAX_SIZE_BUFFER];
-    char print_url[MAX_SIZE_BUFFER];
+    char modified_path_to_print[MAX_SIZE_BUFFER];
+    char modified_url_to_print[MAX_SIZE_BUFFER];
 
-    sprintf(print_path, "%smy_ftp-path%s: %s", GREEN, RESET, root_path);
-    sprintf(print_url, "%smy_ftp-url%s:  http://localhost:%d", GREEN, RESET, port);
+    sprintf(modified_path_to_print, "%sPath%s: %s", BBlue, RESET, root_path);
+    sprintf(modified_url_to_print, "%sURL%s:  http://localhost:%d", BBlue, RESET, port);
 
-    puts(print_path);
-    puts(print_url);
+
+    puts(modified_path_to_print);
+    puts(modified_url_to_print);
+
 
     launch(port, root_path);
 

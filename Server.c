@@ -16,36 +16,38 @@
 #include "Extra_Methods.h"
 #include "Server.h"
 #include "Client.h"
+#include "Url_Methods.h"
 
 #define MAX_SIZE_BUFFER 1024
 #define DELIMITATORS " \t\r\n\a"
-#define HTTP_NOT_FOUND "HTTP/1.1 404 Not Found\r\n\r\n"
 
 
-int server_constructor(char *server_ip, int port, int backlog) 
+int server_constructor(int domain, int service, int protocol, char *server_ip, int port, int backlog) 
 {
     struct sockaddr_in server_address;
     int server_socket;
 
-    server_socket = socket(AF_INET, SOCK_STREAM, 0);
+    server_socket = socket(domain, service, protocol);
 
     if (server_socket < 0) {
         fprintf(stderr, "%s: socket creation failed\n", "ERROR");
         exit(1);
     }
 
-    setsockopt(server_socket, SOL_SOCKET, SO_REUSEADDR, &(int) {1}, sizeof(int));
+    /* setsockopt(server_socket, SOL_SOCKET, SO_REUSEADDR, &(int) {1}, sizeof(int)); */
 
-    server_address.sin_family = AF_INET;
+    server_address.sin_family = domain;
     server_address.sin_port = htons(port);
     inet_aton(server_ip, &server_address.sin_addr);
 
-    if (bind(server_socket, (struct sockaddr *) &server_address, sizeof(server_address)) == -1) {
-        fprintf(stderr, "%s: binding error\n", "ERROR");
+    if (bind(server_socket, (struct sockaddr *) &server_address, sizeof(server_address)) < 0) 
+    {
+        fprintf(stderr, "%s: binding failed\n", "ERROR");
         exit(1);
     }
 
-    if (listen(server_socket, backlog) == -1) {
+    if (listen(server_socket, backlog) < 0) 
+    {
         fprintf(stderr, "%s: listen failed\n", "ERROR");
         exit(1);
     }
@@ -55,19 +57,19 @@ int server_constructor(char *server_ip, int port, int backlog)
 
 int to_other_url(int client_socket, char *path, char *root_path) 
 {
-    DIR *d;
-    d = opendir(path);
+    DIR *directory;
+    directory = opendir(path);
 
-    if (d) {
-        char *response = render_html(d, path, root_path);
+    if (directory) {
+        char *response = render_html(directory, path, root_path);
 
         send(client_socket, response, strlen(response), 0);
         free(response);
-        closedir(d);
+        closedir(directory);
 
         return 1;
     }
-    closedir(d);
+    closedir(directory);
 
     return 0;
 }

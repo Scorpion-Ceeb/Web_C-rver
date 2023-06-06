@@ -10,8 +10,4 @@ char *to_url(char *path);
 
 char *from_url(char *path);
 
-char *path_to_server(char *path, char *root_path);
-
-char *from_path_to_browser(char *path, char *root_path);
-
 #endif

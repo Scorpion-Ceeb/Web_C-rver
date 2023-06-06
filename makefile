@@ -3,8 +3,8 @@ root ?=$(HOME)
 
 .PHONY: dev
 dev:
-		gcc ./*.c -lpthread -lcurl -o test && ./test $(port) $(root)
+		gcc ./*.c -lpthread -lcurl -o main && ./main $(port) $(root)
 
 .PHONY: build
 build:
-		gcc ./*c -lpthread -lcurl -o test
+		gcc ./*c -lpthread -lcurl -o main

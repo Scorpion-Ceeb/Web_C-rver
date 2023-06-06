@@ -2,6 +2,7 @@
 #include "Client.h"
 #include "Extra_Methods.h"
 #include "html_builder.h"
+#include "Url_Methods.h"
 #include "Server.h"
 
 #include <stdio.h>
