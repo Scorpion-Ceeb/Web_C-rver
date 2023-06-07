@@ -25,4 +25,6 @@ int to_other_url(int client_socket, char *path, char *root_path);
 
 int send_file_to_ulr(int client_socket, char *path);
 
+void launch(int port, char *root_path);
+
 #endif /* Server_h */

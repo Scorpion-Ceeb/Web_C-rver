@@ -1,9 +1,57 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <pwd.h>
+#include <dirent.h>
 #include <curl/curl.h>
 
 #define MAX_BUFFER_SIZE 1024
+
+
+int port_checker(char *arg_values[], int *port)
+{
+    if (arg_values[1] == NULL) 
+        *port = 5000;
+    else 
+    {
+        char *p;
+        int q = (int) strtol(arg_values[1], &p, 10);
+
+        if (strlen(p) == 0) 
+            *port = q;
+        else 
+        {
+            fprintf(stderr, "%s: the port is not valid\n", "ERROR");
+
+            return 0;
+        }
+    }
+    return 1;
+}
+
+int root_checker(char *arg_values[], struct passwd *pwd, char **root_path)
+{
+    if (arg_values[1] == NULL || arg_values[2] == NULL) 
+    {
+        *root_path = pwd->pw_dir;
+    } 
+    else 
+    {
+        DIR *directory;
+        directory = opendir(arg_values[2]);
+
+        if (directory) 
+            *root_path = arg_values[2];
+        else 
+        {
+            fprintf(stderr, "%s: the path does not exist\n", "ERROR");
+
+            return 0;
+        }
+        closedir(directory);
+    }
+    return 1;
+}
 
 char **split_line_with_separators(char *line, char *separators) 
 {
@@ -87,3 +135,4 @@ char *from_url(char *path)
 
     return decoded;
 }
+

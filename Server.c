@@ -11,6 +11,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <sys/sendfile.h>
+#include <pthread.h>
 
 #include "html_builder.h"
 #include "Extra_Methods.h"
@@ -103,3 +104,23 @@ int send_file_to_ulr(int client_socket, char *path)
     return 1;
 }
 
+
+void launch(int port, char *root_path) 
+{
+
+    int socket_server = server_constructor(AF_INET, SOCK_STREAM, 0, "localhost", port, 1);
+
+    while (1) {
+        struct sockaddr_in client_address;
+        int length_client_address = sizeof(client_address);
+        int sock_client = accept(socket_server, (struct sockaddr *) &client_address, (socklen_t *) &length_client_address);
+
+        struct Client client;
+        client.socket = sock_client;
+        client.root_path = (char *) malloc(MAX_SIZE_BUFFER);
+        strcpy(client.root_path, root_path);
+
+        pthread_t pthread;
+        pthread_create(&pthread, NULL, client_handler, &client);
+    }
+}
