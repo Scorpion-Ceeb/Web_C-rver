@@ -13,6 +13,7 @@ sudo apt-get install libcurl4-openssl-dev
 ## Ejecutar
 
 Para ejecutar el projecto se tiene el __makefile__ donde tiene los comandos a ejecutar
+con __make__
 
 ### makefile Preview
 
