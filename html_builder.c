@@ -138,7 +138,25 @@ void build_back(char *html_response, char *path, char *root_path)
     strcat(html_response, "<td></td><td></td></tr>");
 }
 
-char *build_html(DIR *d, char *path, char *root_path) 
+void cp_cat_html_tags(char *temp_path, struct dirent *directory, char *html_response, char *path, char *root_path, struct stat st)
+{
+    strcpy(temp_path, path);
+    strcat(temp_path, "/");
+    strcat(temp_path, directory->d_name);
+
+    stat(temp_path, &st);
+
+    strcat(html_response, "<tr>");
+
+    build_name_table(html_response, path, root_path, directory->d_name, st);
+    build_size_table(html_response, st);
+    build_date_table(html_response, st);
+
+    strcat(html_response, "</tr>");
+}
+
+
+char *build_html(DIR *dir_f, char *path, char *root_path) 
 {
     char **html = html_loader();
     int ind = 2;
@@ -151,7 +169,7 @@ char *build_html(DIR *d, char *path, char *root_path)
 
     build_back(html_response, path, root_path);
 
-    while ((directory = readdir(d)) != NULL) 
+    while ((directory = readdir(dir_f)) != NULL) 
     {
         if (strcmp(directory->d_name, ".") == 0) 
             continue;
@@ -169,19 +187,7 @@ char *build_html(DIR *d, char *path, char *root_path)
 
         char temp_path[strlen(path) + strlen(directory->d_name) + 1];
 
-        strcpy(temp_path, path);
-        strcat(temp_path, "/");
-        strcat(temp_path, directory->d_name);
-
-        stat(temp_path, &st);
-
-        strcat(html_response, "<tr>");
-
-        build_name_table(html_response, path, root_path, directory->d_name, st);
-        build_size_table(html_response, st);
-        build_date_table(html_response, st);
-
-        strcat(html_response, "</tr>");
+        cp_cat_html_tags(temp_path, directory, html_response, path, root_path, st);
 
         if (MAX_SIZE_BUFFER * ind - strlen(html_response) < MAX_SIZE_BUFFER) {
             ind *= 2;

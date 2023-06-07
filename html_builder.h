@@ -12,9 +12,11 @@ void build_size_table(char *html_response, struct stat st);
 
 void build_date_table(char *html_response, struct stat st);
 
-char **load_html();
+char **html_loader();
 
 void build_back(char *html_response, char *path, char *root_path);
+
+void cp_cat_html_tags(char temp_path, struct dirent *directory, char *html_response, char *path, char *root_path, struct stat st);
 
 char *build_html(DIR *d, char *path, char *root_path);
 
