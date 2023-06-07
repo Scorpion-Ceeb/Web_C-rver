@@ -34,7 +34,7 @@ int server_constructor(int domain, int service, int protocol, char *server_ip, i
         exit(1);
     }
 
-    /* setsockopt(server_socket, SOL_SOCKET, SO_REUSEADDR, &(int) {1}, sizeof(int)); */
+    setsockopt(server_socket, SOL_SOCKET, SO_REUSEADDR, &(int) {1}, sizeof(int));
 
     server_address.sin_family = domain;
     server_address.sin_port = htons(port);

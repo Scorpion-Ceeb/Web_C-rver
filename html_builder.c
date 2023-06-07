@@ -125,12 +125,12 @@ void build_back(char *html_response, char *path, char *root_path)
     strcat(html_response, "<td>");
     strcat(html_response, "<a href=\"");
 
-    char *redirect = from_path_to_browser(path, root_path);
-    clean_last_path(redirect);
+    char *path_to_browser = from_path_to_browser(path, root_path);
+    clean_last_path(path_to_browser);
 
-    char *url = to_url(redirect);
+    char *url = to_url(path_to_browser);
     strcat(html_response, url);
-    free(redirect);
+    free(path_to_browser);
     free(url);
 
     strcat(html_response, "\">");
@@ -151,17 +151,29 @@ char *build_html(DIR *d, char *path, char *root_path)
 
     build_back(html_response, path, root_path);
 
-    while ((directory = readdir(d)) != NULL) {
-        if (strcmp(directory->d_name, ".") == 0) continue;
-        if (strcmp(directory->d_name, "..") == 0) continue;
+    while ((directory = readdir(d)) != NULL) 
+    {
+        if (strcmp(directory->d_name, ".") == 0) 
+            continue;
+        if (strcmp(directory->d_name, "..") == 0) 
+            continue;
+        
+        int check_index;
+        char *initial_point;
+        
+        initial_point = strchr(directory->d_name, '.');
+        check_index = (int)(initial_point-directory->d_name);
 
-        char aux_path[strlen(path) + strlen(directory->d_name) + 1];
+        if(check_index == 0)
+            continue;
 
-        strcpy(aux_path, path);
-        strcat(aux_path, "/");
-        strcat(aux_path, directory->d_name);
+        char temp_path[strlen(path) + strlen(directory->d_name) + 1];
 
-        stat(aux_path, &st);
+        strcpy(temp_path, path);
+        strcat(temp_path, "/");
+        strcat(temp_path, directory->d_name);
+
+        stat(temp_path, &st);
 
         strcat(html_response, "<tr>");
 

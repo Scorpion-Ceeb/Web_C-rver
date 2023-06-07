@@ -39,11 +39,11 @@ void *client_handler(void *client_data)
     {
         char *path_server = path_to_server(data_splitted[1], client_root_path);
 
-        int rp = to_other_url(client_socket, path_server, client_root_path);
+        int red_url = to_other_url(client_socket, path_server, client_root_path);
 
-        rp = rp || send_file_to_ulr(client_socket, path_server);
+        red_url = red_url || send_file_to_ulr(client_socket, path_server);
 
-        if(!rp) not_found= 1;
+        if(!red_url) not_found= 1;
 
         free(path_server);
     }

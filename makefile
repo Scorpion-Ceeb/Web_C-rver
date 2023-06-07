@@ -1,8 +1,8 @@
 port ?=5000
 root ?=$(HOME)
 
-.PHONY: dev
-dev:
+.PHONY: run
+run:
 		gcc ./*.c -lpthread -lcurl -o main && ./main $(port) $(root)
 
 .PHONY: build

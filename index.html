@@ -5,17 +5,69 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Web C-rver</title>
+    <style>
+        body{
+            background-color: rgba(255, 255, 255, 0.849);
+        }
+        .sortable_table{
+            border-collapse: collapse;
+            margin: 25px 0;
+            font-size: xx-large;
+            width: 1400px;
+            table-layout: fixed;
+        }
+        .sortable_table thead tr{
+            background-color: aquamarine;
+            color:rgb(0, 0, 0);
+            text-align: left;
+            font-weight: bold;
+        }
+        .sortable_table th{
+            border-bottom: 1px solid #000000;
+            border-top: 1px solid #000000;
+            border-right: 1px solid #000000;
+            border-left: 1px solid #000000;
+        }
+        .sortable_table th,
+        .sortable_table td{
+            padding: 12px 15px;
+        }
+        .sortable_table tbody tr,
+        .sortable_table tbody td{
+            border-bottom: 1px solid #000000;
+            border-right: 1px solid #000000;
+            border-left: 1px solid #000000;
+        }
+        .sortable_table th,
+        .sortable_table tr{
+            width: 300px;
+        }
+        .sortable_table thead th:first-child,
+        .sortable_table tbody tr:first-child{
+            width: 800px;
+        }
+        .sortable_table td{
+            font-size: large;
+        }
+        a{
+            color: black;
+        }
+        a:hover{
+            color: aqua;
+        }
+    </style>
 </head>
 <body>
     <table class="sortable_table">
         <thead>
             <tr>
-                <th>Name</th>
+                <th>Folders & Files</th>
                 <th>Size</th>
                 <th>Last Date</th>
             </tr>
         </thead>
         <tbody>
+            
             <!-- TABLE_ELEMENTS -->
         </tbody>
     </table>
